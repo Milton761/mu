@@ -2,7 +2,7 @@
   "name": "mu",
   "id": "1445811726551385076",
   "api": "1.0.0",
-  "main": "code.js",
+  "main": "dist/code.js",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
