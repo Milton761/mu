@@ -1,0 +1,29 @@
+Column(
+    padding: 16dp,
+    spacing: 8dp,
+    alignment: center
+) {
+    Text(
+        text: "Hello World!",
+        color: #FF0000,
+        fontSize: 18sp
+    )
+
+    Box(
+        width: 200dp,
+        height: 100dp,
+        background: #EEEEEE
+    ) {
+        Image(
+            source: "profile.jpg",
+            contentScale: fit
+        )
+    }
+
+    Button(
+        text: "Click Me",
+        onClick: @handleClick,
+        enabled: ${user.isLoggedIn},
+        style: [primary, rounded]
+    )
+}

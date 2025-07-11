@@ -1,107 +1,372 @@
 <style>
+    * {
+        box-sizing: border-box;
+    }
+
     body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
         padding: 16px;
+        background: #f8f9fa;
+        height: 100vh;
+        color: #333;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        min-width: 350px;
+        min-height: 300px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2d3748;
+    }
+
+    .header h1 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+    }
+
+    .header p {
+        opacity: 0.7;
+        margin: 0;
+        font-size: 12px;
     }
 
     .section {
-        margin-bottom: 20px;
-        padding: 16px;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        margin-bottom: 16px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section h2 {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        opacity: 0.7;
     }
 
     button {
+        width: 100%;
         margin: 8px 0;
-        padding: 8px 16px;
-        border-radius: 4px;
-        border: 1px solid #e0e0e0;
-        background: #fff;
+        padding: 12px 20px;
+        border-radius: 6px;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
     }
 
     button:hover {
-        background: #f5f5f5;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
-    #output {
-        width: 100%;
-        height: 300px;
-        margin-top: 16px;
-        padding: 8px;
-        background: #f5f5f5;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        font-family: monospace;
+    button:active {
+        transform: translateY(0);
+    }
+
+    button:disabled {
+        background: #e2e8f0;
+        color: #a0aec0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .output-container {
+        margin-top: 12px;
+    }
+
+    .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .output-header span {
         font-size: 12px;
+        color: #718096;
+        font-weight: 500;
+    }
+
+    .copy-btn {
+        width: auto;
+        padding: 4px 8px;
+        font-size: 11px;
+        margin: 0;
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .copy-btn:hover {
+        background: #cbd5e0;
+        transform: none;
+        box-shadow: none;
+    }
+
+    #output, #output_inspect, #output2 {
+        width: 100%;
+        height: 220px;
+        padding: 12px;
+        background: #1a202c;
+        color: #e2e8f0;
+        border: none;
+        border-radius: 6px;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        font-size: 12px;
+        line-height: 1.4;
         overflow: auto;
         white-space: pre;
+        resize: both;
+        min-height: 80px;
+        min-width: 250px;
+        max-height: 40vh;
+        scrollbar-width: thin;
+        scrollbar-color: #4a5568 #2d3748;
     }
 
     #output_inspect {
-        width: 100%;
-        height: 100px;
-        margin-top: 16px;
-        padding: 8px;
-        background: #f5f5f5;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        font-family: monospace;
-        font-size: 12px;
-        overflow: auto;
-        white-space: pre;
+        height: 140px;
+        max-height: 25vh;
+        resize: both;
     }
 
+    #output::-webkit-scrollbar, #output_inspect::-webkit-scrollbar, #output2::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #output::-webkit-scrollbar-track, #output_inspect::-webkit-scrollbar-track, #output2::-webkit-scrollbar-track {
+        background: #2d3748;
+        border-radius: 3px;
+    }
+
+    #output::-webkit-scrollbar-thumb, #output_inspect::-webkit-scrollbar-thumb, #output2::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 3px;
+    }
+
+    #output::-webkit-scrollbar-thumb:hover, #output_inspect::-webkit-scrollbar-thumb:hover, #output2::-webkit-scrollbar-thumb:hover {
+        background: #718096;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .loading.show {
+        display: block;
+    }
+
+    .stats {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        font-size: 12px;
+        color: #718096;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
 </style>
 
-<div class="section">
-    <h2>Inspect</h2>
-    <button id="btnInspect">Inspect Element a</button>
-    <pre id="output_inspect"></pre>
-</div>
+<div class="container">
+    <div class="header">
+        <h1>🎨 UI Structure Extractor</h1>
+        <p>Extract and analyze your Figma design structure</p>
+    </div>
 
-<div class="section">
-    <h2>Structure Extractor</h2>
-    <button id="extract">Extract Structure</button>
-    <pre id="output"></pre>
-</div>
+    <div class="section">
+        <h2>
+            🔍 Quick Inspect
+        </h2>
+        <button id="btnInspect">Inspect Selected Element</button>
+        
+        <div class="output-container">
+            <div class="output-header">
+                <span>Element Details</span>
+                <button class="copy-btn" id="copy-inspect">📋 Copy</button>
+            </div>
+            <pre id="output_inspect"></pre>
+        </div>
+    </div>
 
-<div class="section">
-    <h2>Structure Extractor</h2>
-    <button id="extract2">Extract Structure</button>
-    <pre id="output2"></pre>
+    <div class="section">
+        <h2>
+            📋 Extract Full Structure
+        </h2>
+        <button id="extract">Extract UI Structure</button>
+        
+        <div class="loading" id="loading">
+            <span>⏳ Analyzing structure...</span>
+        </div>
+
+        <div class="output-container" id="output-container" style="display: none;">
+            <div class="output-header">
+                <span>JSON Structure</span>
+                <button class="copy-btn" id="copy-btn">📋 Copy</button>
+            </div>
+            <pre id="output"></pre>
+            <div class="stats" id="stats"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    document.getElementById('extract').onclick = () => {
-        parent.postMessage({pluginMessage: {type: 'extract-structure'}}, '*');
-    };
+    let extractedData = null;
 
-    document.getElementById('extract2').onclick = () => {
+    document.getElementById('extract').onclick = () => {
+        const loading = document.getElementById('loading');
+        const outputContainer = document.getElementById('output-container');
+        const button = document.getElementById('extract');
+        
+        loading.classList.add('show');
+        outputContainer.style.display = 'none';
+        button.disabled = true;
+        button.textContent = 'Extracting...';
+        
         parent.postMessage({pluginMessage: {type: 'extract-structure'}}, '*');
     };
 
     document.getElementById('btnInspect').onclick = () => {
+        const button = document.getElementById('btnInspect');
+        button.disabled = true;
+        button.textContent = 'Inspecting...';
+        
         parent.postMessage({pluginMessage: {type: 'inspect-node'}}, '*');
     };
 
-    onmessage = (event) => {
-        console.log("resolve state a", event.data.pluginMessage.type);
+    document.getElementById('copy-btn').onclick = () => {
+        const output = document.getElementById('output');
+        navigator.clipboard.writeText(output.textContent).then(() => {
+            const btn = document.getElementById('copy-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+    };
 
-        if (event.data.pluginMessage.type === 'structure-data') {
-            const output = document.getElementById('output');
-            output.textContent = JSON.stringify(event.data.pluginMessage.data, null, 2);
+    document.getElementById('copy-inspect').onclick = () => {
+        const output = document.getElementById('output_inspect');
+        navigator.clipboard.writeText(output.textContent).then(() => {
+            const btn = document.getElementById('copy-inspect');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+    };
+
+    function countNodes(data) {
+        let count = 0;
+        function traverse(node) {
+            count++;
+            if (node.children) {
+                node.children.forEach(traverse);
+            }
         }
+        if (Array.isArray(data)) {
+            data.forEach(traverse);
+        } else {
+            traverse(data);
+        }
+        return count;
+    }
+
+    function getNodeTypes(data) {
+        const types = new Set();
+        function traverse(node) {
+            types.add(node.type);
+            if (node.children) {
+                node.children.forEach(traverse);
+            }
+        }
+        if (Array.isArray(data)) {
+            data.forEach(traverse);
+        } else {
+            traverse(data);
+        }
+        return Array.from(types);
+    }
+
+    onmessage = (event) => {
+        console.log("Message received:", event.data.pluginMessage.type);
 
         if (event.data.pluginMessage.type === 'structure-data') {
-            const output = document.getElementById('output2');
-            output.textContent = JSON.stringify(event.data.pluginMessage.data, null, 2);
+            extractedData = event.data.pluginMessage.data;
+            
+            const loading = document.getElementById('loading');
+            const outputContainer = document.getElementById('output-container');
+            const output = document.getElementById('output');
+            const button = document.getElementById('extract');
+            const stats = document.getElementById('stats');
+            
+            loading.classList.remove('show');
+            outputContainer.style.display = 'block';
+            button.disabled = false;
+            button.textContent = 'Extract UI Structure';
+            
+            output.textContent = JSON.stringify(extractedData, null, 2);
+            
+            // Show stats
+            const nodeCount = countNodes(extractedData);
+            const nodeTypes = getNodeTypes(extractedData);
+            stats.innerHTML = `
+                <div class="stat">📊 ${nodeCount} nodes</div>
+                <div class="stat">🏷️ ${nodeTypes.length} types</div>
+                <div class="stat">📝 ${output.textContent.length} chars</div>
+            `;
         }
 
         if (event.data.pluginMessage.type === 'inspect-element') {
             const output = document.getElementById('output_inspect');
+            const button = document.getElementById('btnInspect');
+            
             output.textContent = JSON.stringify(event.data.pluginMessage.data, null, 2);
+            button.disabled = false;
+            button.textContent = 'Inspect Selected Element';
         }
     };
-
 
 </script>

@@ -59,15 +59,23 @@ function extractStructure(node: BaseNode): UIStructure {
 }
 
 figma.showUI(__html__, {
-    width: 450,
-    height: 600,
+    width: 480,
+    height: Math.round(figma.viewport.bounds.height),
     title: "UI Structure Extractor",
-    visible: true
+    visible: true,
+    themeColors: true
 });
 
 figma.ui.onmessage = (msg: { type: string, count?: number }) => {
 
     console.log("Message received a: ", msg);
+
+    if (msg.type === 'resize-request') {
+        // Get current viewport height and resize plugin
+        const newHeight = Math.max(400, Math.round(figma.viewport.bounds.height));
+        figma.ui.resize(480, newHeight);
+        return;
+    }
 
     if (msg.type === 'create-shapes') {
         const numberOfRectangles = msg.count || 0;

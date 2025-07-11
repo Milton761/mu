@@ -1,0 +1,78 @@
+{
+  parserClass="com.codesolo.dohko.parser.DohkoParser"
+
+  psiClassPrefix="Dohko"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.codesolo.dohko.psi"
+  psiImplPackage="com.codesolo.dohko.psi.impl"
+
+  elementTypeHolderClass="com.codesolo.dohko.psi.DohkoTypes"
+  elementTypeClass="com.codesolo.dohko.psi.DohkoElementType"
+  tokenTypeClass="com.codesolo.dohko.psi.DohkoTokenType"
+
+  tokens=[
+    IDENTIFIER='regexp:[a-zA-Z_][a-zA-Z0-9_]*'
+    STRING='regexp:"([^"\r\n\\]|\\.)*"'
+    NUMBER='regexp:-?[0-9]+(\.[0-9]+)?'
+    BOOLEAN='regexp:true|false'
+    COLOR='regexp:#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})'
+    DIMENSION='regexp:[0-9]+(\.[0-9]+)?(px|dp|%|em|rem)'
+    ACTION='regexp:@[a-zA-Z][a-zA-Z0-9_]*'
+    
+    WHITE_SPACE='regexp:\s+'
+    COMMENT='regexp://[^\r\n]*'
+    
+    LPAREN='('
+    RPAREN=')'
+    LBRACE='{'
+    RBRACE='}'
+    LBRACK='['
+    RBRACK=']'
+    COLON=':'
+    COMMA=','
+    DOLLAR_BRACE='${'
+  ]
+}
+
+// Parser Rules
+root ::= composable | layout
+
+layout ::= box | column
+
+box ::= "Box" LPAREN attributeList RPAREN [LBRACE contentList RBRACE]
+
+column ::= "Column" LPAREN attributeList RPAREN [LBRACE contentList RBRACE]
+
+attributeList ::= attribute*
+
+contentList ::= contentItem*
+
+contentItem ::= composable
+
+composable ::= materialComponent | layout
+
+materialComponent ::= componentName LPAREN attributeList RPAREN [LBRACE contentList RBRACE]
+
+componentName ::= "Text" | "Image" | "Button" | IDENTIFIER
+
+attribute ::= IDENTIFIER COLON value COMMA?
+
+value ::= STRING
+        | NUMBER
+        | BOOLEAN
+        | COLOR
+        | DIMENSION
+        | ACTION
+        | IDENTIFIER
+        | array
+        | templateExpression
+
+array ::= LBRACK [arrayElements] RBRACK
+
+arrayElements ::= value (COMMA value)*
+
+templateExpression ::= DOLLAR_BRACE expression RBRACE
+
+expression ::= IDENTIFIER ('.' IDENTIFIER)*
+
+// No need to define character-level grammar - use tokens directly
